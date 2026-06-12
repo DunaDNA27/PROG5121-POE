@@ -5,7 +5,7 @@
 
 /**
  *
- * @author oarat
+ * @author oaratwa
  */
 import java.util.Scanner;
 
@@ -14,13 +14,14 @@ public class Message
     Scanner input = new Scanner(System.in);
     
     private String messageID;
-    private int messageNum;
+    private String messageNum;
     private String recipientNum;
     private String messageBody;
+    private String messageHash;
     
     private static int totalMessagesSent = 0;
        
-    public void textMessage()
+    public Message(String messageID, String messageNum, String recipientNum, String messageBody)
     {
       this.messageID = messageID;
       this.messageNum = messageNum;
@@ -58,31 +59,34 @@ public class Message
        return true;
     }
     
-    public static boolean checkMessageLength(String message)
+    public String checkMessageLength(String messageBody)
     {
-        if(message ==null)
-        {
-            System.out.print("Message cannot be empty.");
-            return false;
-        }
         
-        if(message.length()>=250)
+        if(messageBody.length()>=250)
         {    
            System.out.println("Message exceeds 250 characters, please reduce number of characters.");
-           return false ;
+           return messageBody;
         }
         
         System.out.println("Message ready to send.");
-        return true;
+        return messageBody;
     }
     
-    public static void createMessageHash(String messageID, String messageBody)
+    public static String createMessageHash(String messageID, String messageBody, String messageNum )
     {
         if(messageID == null && messageID.length()<2 && messageBody == null && messageBody.trim().isEmpty())
         {
-            System.out.println("00:0:UNKNOWN");
-            
+            System.out.println("00:0:UNKNOWN");           
         }
+            String[] words = messageBody.trim().split("\\s+");
+            String firstWord = words[0].toUpperCase();
+            String lastWord = words[words.length - 1].toUpperCase();
+            return messageID.substring(0,2) +":"+ messageNum +":"+ firstWord + lastWord;          
+    }
+    
+    public String getMessageHash()
+    {
+        return messageHash;
     }
     
     public static void sentMessage(int choice)
@@ -106,9 +110,9 @@ public class Message
         }           
     }
     
-    public void printMessages()
+    public String printMessages()
     {
-        System.out.println("\nMessageID: "+ messageID + "\nRecipient: " + recipientNum + "\nMessage: " + messageBody);
+        return("\nMessageID: "+ messageID + "\nRecipient: " + recipientNum + "\nMessage: " + messageBody);
     }
     
     public static int returnTotalMessages()
@@ -116,12 +120,9 @@ public class Message
         return totalMessagesSent;
     }
     
-    public void storeMessage()
+    public String storeMessage()
     {
-        System.out.println("{\n"+ 
-                " \"messageID\": \"" + messageID + "\",\n" +
-                "\"recipient\": \""+ recipientNum + "\",\n" +
-                "\"message\": \""+ messageBody.replace("\"", "\\\"") + "\"\n"+
-                "}");
+        return("{\n"+ " \"messageID\": \"" + messageID + "\",\n" + "\"recipient\": \""+ recipientNum + "\",\n" +
+                "\"message\": \""+ messageBody.replace("\"", "\\\"") + "\"\n"+ "}");
     }
 }
